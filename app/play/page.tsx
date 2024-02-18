@@ -5,6 +5,7 @@ import { ComponentPropsWithoutRef, useEffect, useState } from "react";
 import { GameOptions, gameOptionsSchema } from "~/lib/game-options";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { CircularButton } from "~/components/circular-button";
+import { alphabetical } from "~/lib/utils";
 
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -33,6 +34,13 @@ export default function Page() {
       const decoded = JSON.parse(atob(params.get("options")!));
       const options = gameOptionsSchema.parse(decoded);
       console.info("setting game options from URL", options);
+
+      for (let i = 0; i < 4; i++) {
+        options.words[i].sort(alphabetical);
+      }
+
+      console.info("setting game options from URL", options);
+
       setGameOptions(options);
       setWordPool(regenerateWordPool(options, guesses));
     } catch {
@@ -123,10 +131,13 @@ export default function Page() {
               const result = validateGuess(gameOptions, selectedWords);
 
               if (result === true) {
+                // sort so the words swap to the right order
+                const sortedSelected = selectedWords.toSorted(alphabetical);
+
                 // swap guesses into the beginning of the pool
                 for (let a = 0; a < 4; a++) {
                   setWordPool((pool) => {
-                    const b = pool.indexOf(selectedWords[a]);
+                    const b = pool.indexOf(sortedSelected[a]);
                     return toSwapped(pool, a, b);
                   });
                 }
