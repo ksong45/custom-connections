@@ -1,4 +1,4 @@
-## Custom Connections
+# Custom Connections
 
 ![Screenshot of Custom Connections](https://raw.githubusercontent.com/zsrobinson/custom-connections/main/public/screenshot.png)
 
