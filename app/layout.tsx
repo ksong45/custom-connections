@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import "./globals.css";
 import Link from "next/link";
 
@@ -30,7 +30,8 @@ export default function Layout({ children }: { children: ReactNode }) {
             <p>Group words that share a common thread.</p>
           </div>
         </header>
-        {children}
+
+        <Suspense>{children}</Suspense>
       </body>
     </html>
   );
