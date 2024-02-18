@@ -199,7 +199,7 @@ function getColor(options: GameOptions, word: string) {
 function validateGuess(options: GameOptions, guess: string[]) {
   const first = getColor(options, guess[0]);
 
-  for (let i = 1; i < 3; i++) {
+  for (let i = 1; i < 4; i++) {
     if (getColor(options, guess[i]) !== first) {
       return false;
     }
