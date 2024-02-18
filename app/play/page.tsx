@@ -42,11 +42,7 @@ export default function Page() {
 
   // ensure that gameOptions won't be undefined
   if (gameOptions === undefined) {
-    return (
-      <main className="flex flex-col gap-4">
-        <p>loading...</p>
-      </main>
-    );
+    return <main></main>;
   }
 
   // derived state
@@ -99,64 +95,65 @@ export default function Page() {
       <div className="flex items-center gap-2" ref={mistakesAnimateRef}>
         <p>Remaining mistakes:</p>
         {Array.from({ length: remainingMistakes }, (_, i) => i).map((_, i) => (
-          <span className="bg-nyt-dark h-4 w-4 rounded-full" key={i}></span>
+          <span className="h-4 w-4 rounded-full bg-nyt-dark" key={i}></span>
         ))}
       </div>
 
-      {/* buttons and whatnot */}
-      <div className="flex flex-wrap gap-4">
-        {/* <CircularButton
-          onClick={() => router.push(`/new?options=${params.get("options")}`)}
-        >
-          Remix
-        </CircularButton> */}
-
-        <CircularButton
-          onClick={() => setWordPool(regenerateWordPool(gameOptions, guesses))}
-        >
-          Shuffle
-        </CircularButton>
-
-        <CircularButton
-          disabled={selectedWords.length === 0}
-          onClick={() => setSelectedWords([])}
-        >
-          Deselect all
-        </CircularButton>
-
-        <CircularButton
-          variant={submitDisabled ? undefined : "filled"}
-          disabled={submitDisabled}
-          onClick={async () => {
-            const result = validateGuess(gameOptions, selectedWords);
-
-            if (result === true) {
-              // swap guesses into the beginning of the pool
-              for (let a = 0; a < 4; a++) {
-                setWordPool((pool) => {
-                  const b = pool.indexOf(selectedWords[a]);
-                  return toSwapped(pool, a, b);
-                });
-              }
-
-              setPoolAnimated(true);
-              await new Promise((res) => setTimeout(res, 500));
-
-              setGuesses([...guesses, selectedWords]);
-              setWordPool((pool) =>
-                pool.filter((word) => !selectedWords.includes(word)),
-              );
-              setSelectedWords([]);
-              setPoolAnimated(false);
-            } else {
-              setGuesses([...guesses, selectedWords]);
-              setSelectedWords([]);
+      {!wonGame && !lostGame ? (
+        <div className="flex flex-wrap gap-4">
+          <CircularButton
+            onClick={() =>
+              setWordPool(regenerateWordPool(gameOptions, guesses))
             }
-          }}
-        >
-          Submit
-        </CircularButton>
-      </div>
+          >
+            Shuffle
+          </CircularButton>
+
+          <CircularButton
+            disabled={selectedWords.length === 0}
+            onClick={() => setSelectedWords([])}
+          >
+            Deselect all
+          </CircularButton>
+
+          <CircularButton
+            variant={submitDisabled ? undefined : "filled"}
+            disabled={submitDisabled}
+            onClick={async () => {
+              const result = validateGuess(gameOptions, selectedWords);
+
+              if (result === true) {
+                // swap guesses into the beginning of the pool
+                for (let a = 0; a < 4; a++) {
+                  setWordPool((pool) => {
+                    const b = pool.indexOf(selectedWords[a]);
+                    return toSwapped(pool, a, b);
+                  });
+                }
+
+                setPoolAnimated(true);
+                await new Promise((res) => setTimeout(res, 500));
+
+                setGuesses([...guesses, selectedWords]);
+                setWordPool((pool) =>
+                  pool.filter((word) => !selectedWords.includes(word)),
+                );
+                setSelectedWords([]);
+                setPoolAnimated(false);
+              } else {
+                setGuesses([...guesses, selectedWords]);
+                setSelectedWords([]);
+              }
+            }}
+          >
+            Submit
+          </CircularButton>
+        </div>
+      ) : wonGame ? (
+        <p>You won, congrats!</p>
+      ) : lostGame ? (
+        <p>You lost, refresh to try again!</p>
+      ) : null}
     </main>
   );
 }
