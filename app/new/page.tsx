@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { CircularButton } from "~/components/circular-button";
+import { colors } from "~/lib/colors";
 import { GameOptions, gameOptionsSchema } from "~/lib/game-options";
 
 export default function Page() {
@@ -74,7 +75,7 @@ export default function Page() {
       </div>
 
       <CategoryInput
-        color="bg-nyt-yellow"
+        color={colors[0]}
         name={yellowName}
         setName={setYellowName}
         words={yellowWords}
@@ -82,7 +83,7 @@ export default function Page() {
       />
 
       <CategoryInput
-        color="bg-nyt-green"
+        color={colors[1]}
         name={greenName}
         setName={setGreenName}
         words={greenWords}
@@ -90,7 +91,7 @@ export default function Page() {
       />
 
       <CategoryInput
-        color="bg-nyt-blue"
+        color={colors[2]}
         name={blueName}
         setName={setBlueName}
         words={blueWords}
@@ -98,7 +99,7 @@ export default function Page() {
       />
 
       <CategoryInput
-        color="bg-nyt-purple"
+        color={colors[3]}
         name={purpleName}
         setName={setPurpleName}
         words={purpleWords}
@@ -228,7 +229,7 @@ function CategoryNameInput({ color, name, setName }: CategoryNameInputProps) {
       <input
         type="text"
         placeholder="CATEGORY NAME"
-        className="min-w-[304px] border-b border-black px-1 font-semibold uppercase"
+        className="min-w-[304px] border-b border-black bg-stone-50 px-1 font-semibold uppercase"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
@@ -250,7 +251,7 @@ function TextInput({ text, setText, name, icon }: TextInputProps) {
       <input
         type="text"
         placeholder={name}
-        className="min-w-[304px] border-b border-black px-1 font-semibold uppercase"
+        className="min-w-[304px] border-b border-stone-800 bg-stone-50 px-1 font-semibold uppercase"
         value={text}
         onChange={(e) => setText(e.target.value)}
       />

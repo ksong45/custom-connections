@@ -1,23 +1,17 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { ComponentPropsWithoutRef, useEffect, useState } from "react";
-import { GameOptions, gameOptionsSchema } from "~/lib/game-options";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { ComponentPropsWithoutRef, useEffect, useState } from "react";
 import { CircularButton } from "~/components/circular-button";
+import { colors } from "~/lib/colors";
+import { GameOptions, gameOptionsSchema } from "~/lib/game-options";
 import { alphabetical } from "~/lib/utils";
 
 /* eslint-disable react-hooks/exhaustive-deps */
 
-const colors = [
-  "bg-nyt-yellow",
-  "bg-nyt-green",
-  "bg-nyt-blue",
-  "bg-nyt-purple",
-];
-
 export default function Page() {
-  const router = useRouter();
   const params = useSearchParams();
   const [mistakesAnimateRef] = useAutoAnimate();
   const [poolAnimateRef, setPoolAnimated] = useAutoAnimate();
@@ -64,10 +58,27 @@ export default function Page() {
 
   return (
     <main className="flex flex-col gap-4">
-      <p>
-        <span className="font-semibold">{gameOptions.title.toUpperCase()}</span>{" "}
-        by {gameOptions.author.toUpperCase()}
-      </p>
+      <div>
+        <h2>
+          <span className="text-2xl font-semibold">
+            {gameOptions.title.toUpperCase()}
+          </span>{" "}
+          by {gameOptions.author.toUpperCase()}
+        </h2>
+
+        <p className="text-stone-500">
+          <Link
+            href={`/new?options=${params.get("options")}`}
+            className="underline"
+          >
+            remix this game
+          </Link>{" "}
+          or{" "}
+          <Link href="/new" className="underline">
+            create your own
+          </Link>
+        </p>
+      </div>
 
       {/* print out finished categories */}
       {guesses.map((guess) =>
@@ -80,7 +91,6 @@ export default function Page() {
           />
         ) : undefined,
       )}
-
       {/* grid from the word pool */}
       <div className="grid grid-cols-4 gap-4" ref={poolAnimateRef}>
         {wordPool.map((word) => (
@@ -99,14 +109,12 @@ export default function Page() {
           </WordTile>
         ))}
       </div>
-
       <div className="flex items-center gap-2" ref={mistakesAnimateRef}>
         <p>Remaining mistakes:</p>
         {Array.from({ length: remainingMistakes }, (_, i) => i).map((_, i) => (
-          <span className="h-4 w-4 rounded-full bg-nyt-dark" key={i}></span>
+          <span className="h-4 w-4 rounded-full bg-stone-600" key={i}></span>
         ))}
       </div>
-
       {!wonGame && !lostGame ? (
         <div className="flex flex-wrap gap-4">
           <CircularButton
@@ -174,7 +182,7 @@ type WordTileProps = ComponentPropsWithoutRef<"button"> & { selected: boolean };
 function WordTile({ selected, ...props }: WordTileProps) {
   return (
     <button
-      className={`${selected ? "bg-nyt-dark text-white" : "bg-nyt-light"} w-40 rounded-md py-5 text-center font-semibold uppercase transition-colors`}
+      className={`${selected ? "bg-stone-600 text-stone-50" : "bg-stone-200"} w-40 rounded-md py-5 text-center font-semibold uppercase transition-colors`}
       {...props}
     />
   );

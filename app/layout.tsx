@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="mx-auto flex max-w-fit flex-col gap-4 p-8">
+      <body className="mx-auto flex max-w-fit flex-col gap-4 bg-stone-50 p-8 text-stone-800">
         <header className="flex w-screen max-w-[688px] items-center gap-4">
           <Link href="/">
             <img
@@ -30,6 +30,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             <p>Group words that share a common thread.</p>
           </div>
         </header>
+        <hr className="border-stone-300" />
 
         <Suspense>{children}</Suspense>
       </body>
