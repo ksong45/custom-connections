@@ -105,10 +105,16 @@ export default function Page() {
 
       {/* buttons and whatnot */}
       <div className="flex flex-wrap gap-4">
-        <CircularButton
+        {/* <CircularButton
           onClick={() => router.push(`/new?options=${params.get("options")}`)}
         >
           Remix
+        </CircularButton> */}
+
+        <CircularButton
+          onClick={() => setWordPool(regenerateWordPool(gameOptions, guesses))}
+        >
+          Shuffle
         </CircularButton>
 
         <CircularButton
