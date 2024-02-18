@@ -3,8 +3,8 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { ComponentPropsWithoutRef, useEffect, useState } from "react";
 import { GameOptions, gameOptionsSchema } from "~/lib/game-options";
-import { CircularButton } from "../new/page";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { CircularButton } from "~/components/circular-button";
 
 /* eslint-disable react-hooks/exhaustive-deps */
 

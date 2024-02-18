@@ -3,13 +3,13 @@
 import { IconTextSize, IconUser } from "@tabler/icons-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  ComponentPropsWithoutRef,
   Dispatch,
   ReactNode,
   SetStateAction,
   useEffect,
   useState,
 } from "react";
+import { CircularButton } from "~/components/circular-button";
 import { GameOptions, gameOptionsSchema } from "~/lib/game-options";
 
 export default function Page() {
@@ -178,26 +178,6 @@ function WordInput({ color, i, words, setWords }: WordInputProps) {
           return newArr;
         })
       }
-    />
-  );
-}
-
-type CircularButtonProps = ComponentPropsWithoutRef<"button"> & {
-  variant?: "filled";
-};
-
-export function CircularButton({
-  disabled,
-  variant,
-  ...props
-}: CircularButtonProps) {
-  return (
-    <button
-      {...props}
-      className={`rounded-full border border-black px-4 py-2
-        ${disabled ? "opacity-40" : ""}
-        ${variant === "filled" ? "bg-black text-white" : ""}`}
-      disabled={disabled}
     />
   );
 }
