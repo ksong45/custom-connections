@@ -14,6 +14,8 @@ const config: Config = {
         "nyt-blue": "#B4C3EB",
         "nyt-purple": "#B283C1",
         "nyt-lilac": "#B1A7F8",
+        "nyt-light": "#EFEFE6",
+        "nyt-dark": "#5A594E",
       },
     },
   },

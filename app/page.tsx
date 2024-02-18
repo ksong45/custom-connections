@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+
 export default function Page() {
-  return <p>Home</p>;
+  // in place of an actual home page
+  return redirect("/new");
 }

@@ -48,15 +48,15 @@ export default function Page() {
       setBlueWords(options.words[2]);
       setPurpleWords(options.words[3]);
 
-      setTitle(options.title ?? "");
-      // purposely don't set author
+      setTitle(options.title);
+      setAuthor(options.author);
     } catch {
       console.error("could not parse game options from URL");
     }
   }, [params]);
 
   return (
-    <main className="flex max-w-fit flex-col gap-4">
+    <main className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-4">
         <TextInput
           name="title (optional)"
@@ -144,7 +144,7 @@ export default function Page() {
             }
 
             const encoded = btoa(JSON.stringify(obj));
-            router.push(`/play?config=${encoded}`);
+            router.push(`/play?options=${encoded}`);
           }}
         >
           Submit
@@ -186,7 +186,11 @@ type CircularButtonProps = ComponentPropsWithoutRef<"button"> & {
   variant?: "filled";
 };
 
-function CircularButton({ disabled, variant, ...props }: CircularButtonProps) {
+export function CircularButton({
+  disabled,
+  variant,
+  ...props
+}: CircularButtonProps) {
   return (
     <button
       {...props}
