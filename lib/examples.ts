@@ -3,7 +3,7 @@ import { GameOptions } from "./game-options";
 export const examples: GameOptions[] = [
   {
     title: "Connections #173",
-    author: "New York Times",
+    author: "NYTimes",
     names: [
       "PLACES TO SHOP",
       "WAYS TO REMOVE HAIR",
@@ -19,7 +19,7 @@ export const examples: GameOptions[] = [
   },
   {
     title: "Connections #204",
-    author: "New York Times",
+    author: "NYTimes",
     names: [
       "GARDENING NOUNS/VERBS",
       "KINDS OF SALADS",
@@ -35,7 +35,7 @@ export const examples: GameOptions[] = [
   },
   {
     title: "Connections #235",
-    author: "New York Times",
+    author: "NYTimes",
     names: ["MAKE SHORTER", "MUSCULAR", "ENTHUSIAST", "WRINKLY THINGS"],
     words: [
       ["CLIP", "CUT", "PARE", "TRIM"],

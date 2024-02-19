@@ -80,43 +80,51 @@ export default function Page() {
         </p>
       </div>
 
-      {/* print out finished categories */}
-      {guesses.map((guess) =>
-        validateGuess(gameOptions, guess) ? (
-          <FinishedCategory
-            name={gameOptions.names[getColor(gameOptions, guess[0])]}
-            words={gameOptions.words[getColor(gameOptions, guess[0])]}
-            color={colors[getColor(gameOptions, guess[0])]}
-            key={getColor(gameOptions, guess[0])}
-          />
-        ) : undefined,
-      )}
-      {/* grid from the word pool */}
-      <div className="grid grid-cols-4 gap-4" ref={poolAnimateRef}>
-        {wordPool.map((word) => (
-          <WordTile
-            key={word}
-            selected={selectedWords.includes(word)}
-            onClick={() => {
-              if (selectedWords.includes(word)) {
-                setSelectedWords(selectedWords.filter((w) => w !== word));
-              } else if (selectedWords.length < 4) {
-                setSelectedWords([...selectedWords, word]);
-              }
-            }}
-          >
-            {word}
-          </WordTile>
-        ))}
+      <div className="flex flex-col gap-2 sm:gap-4">
+        {/* print out finished categories */}
+        {guesses.map((guess) =>
+          validateGuess(gameOptions, guess) ? (
+            <FinishedCategory
+              name={gameOptions.names[getColor(gameOptions, guess[0])]}
+              words={gameOptions.words[getColor(gameOptions, guess[0])]}
+              color={colors[getColor(gameOptions, guess[0])]}
+              key={getColor(gameOptions, guess[0])}
+            />
+          ) : undefined,
+        )}
+
+        {/* grid from the word pool */}
+        <div className="grid grid-cols-4 gap-2 sm:gap-4" ref={poolAnimateRef}>
+          {wordPool.map((word) => (
+            <WordTile
+              key={word}
+              selected={selectedWords.includes(word)}
+              onClick={() => {
+                if (selectedWords.includes(word)) {
+                  setSelectedWords(selectedWords.filter((w) => w !== word));
+                } else if (selectedWords.length < 4) {
+                  setSelectedWords([...selectedWords, word]);
+                }
+              }}
+            >
+              {word}
+            </WordTile>
+          ))}
+        </div>
       </div>
-      <div className="flex items-center gap-2" ref={mistakesAnimateRef}>
+
+      <div
+        className="flex items-center gap-2 place-self-center sm:place-self-auto"
+        ref={mistakesAnimateRef}
+      >
         <p>Remaining mistakes:</p>
         {Array.from({ length: remainingMistakes }, (_, i) => i).map((_, i) => (
           <span className="h-4 w-4 rounded-full bg-stone-600" key={i}></span>
         ))}
       </div>
+
       {!wonGame && !lostGame ? (
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4 place-self-center sm:place-self-auto">
           <CircularButton
             onClick={() =>
               setWordPool(regenerateWordPool(gameOptions, guesses))
@@ -182,7 +190,7 @@ type WordTileProps = ComponentPropsWithoutRef<"button"> & { selected: boolean };
 function WordTile({ selected, ...props }: WordTileProps) {
   return (
     <button
-      className={`${selected ? "bg-stone-600 text-stone-50" : "bg-stone-200"} w-40 rounded-md py-5 text-center font-semibold uppercase transition-colors`}
+      className={`${selected ? "bg-stone-600 text-stone-50" : "bg-stone-200"} aspect-square break-words rounded-md p-2 text-center font-semibold uppercase leading-none transition-colors sm:aspect-auto sm:py-6 sm:text-base`}
       {...props}
     />
   );
@@ -197,7 +205,7 @@ type FinishedCategoryProps = {
 function FinishedCategory({ name, words, color }: FinishedCategoryProps) {
   return (
     <div
-      className={`${color} w-[688px] rounded-md py-3 text-center uppercase leading-tight`}
+      className={`${color} flex aspect-[4.25/1] flex-col justify-center rounded-md py-4 text-center uppercase leading-tight sm:aspect-auto`}
     >
       <p className="font-semibold">{name}</p>
       <p>{words.join(", ")}</p>

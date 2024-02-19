@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="mx-auto flex max-w-fit flex-col gap-4 bg-stone-50 p-8 text-stone-800">
-        <header className="flex w-screen max-w-[688px] items-center gap-4">
-          <Link href="/">
+      <body className="mx-auto flex max-w-screen-md flex-col gap-4 bg-stone-50 p-4 text-stone-800 sm:p-8">
+        <header className="flex items-center gap-4">
+          <Link href="/" className="shrink-0">
             <img
               src="/logo-1024.png"
               alt="Custom Connections Logo"

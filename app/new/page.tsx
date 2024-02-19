@@ -169,7 +169,7 @@ function WordInput({ color, i, words, setWords }: WordInputProps) {
     <input
       type="text"
       name={color + "-" + i}
-      className={`${color} w-40 rounded-md py-5 text-center font-semibold uppercase placeholder:text-slate-600/50`}
+      className={`${color} rounded-md py-5 text-center font-semibold uppercase placeholder:text-slate-600/50`}
       placeholder="WORD"
       value={words[i]}
       onChange={(e) =>
@@ -201,7 +201,7 @@ function CategoryInput({
   return (
     <>
       <CategoryNameInput color={color} name={name} setName={setName} />
-      <div className="flex flex-wrap gap-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-4">
         {Array.from({ length: 4 }, (_, i) => i).map((i) => (
           <WordInput
             color={color}
