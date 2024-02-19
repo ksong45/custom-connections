@@ -4,6 +4,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ComponentPropsWithoutRef, useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { CircularButton } from "~/components/circular-button";
 import { colors } from "~/lib/colors";
 import { GameOptions, gameOptionsSchema } from "~/lib/game-options";
@@ -59,6 +60,19 @@ export default function Page() {
   return (
     <main className="flex flex-col gap-4">
       <div>
+        <Toaster
+          containerStyle={{
+            position: "relative",
+            inset: 0,
+            flexShrink: 0,
+          }}
+          toastOptions={{
+            duration: 3000,
+            className:
+              "!shrink-0 !rounded-md !bg-stone-900 !p-2 !text-stone-50 !shadow-md",
+          }}
+        />
+
         <h2>
           <span className="text-2xl font-semibold">
             {gameOptions.title.toUpperCase()}
@@ -94,23 +108,25 @@ export default function Page() {
         )}
 
         {/* grid from the word pool */}
-        <div className="grid grid-cols-4 gap-2 sm:gap-4" ref={poolAnimateRef}>
-          {wordPool.map((word) => (
-            <WordTile
-              key={word}
-              selected={selectedWords.includes(word)}
-              onClick={() => {
-                if (selectedWords.includes(word)) {
-                  setSelectedWords(selectedWords.filter((w) => w !== word));
-                } else if (selectedWords.length < 4) {
-                  setSelectedWords([...selectedWords, word]);
-                }
-              }}
-            >
-              {word}
-            </WordTile>
-          ))}
-        </div>
+        {wordPool.length > 0 && (
+          <div className="grid grid-cols-4 gap-2 sm:gap-4" ref={poolAnimateRef}>
+            {wordPool.map((word) => (
+              <WordTile
+                key={word}
+                selected={selectedWords.includes(word)}
+                onClick={() => {
+                  if (selectedWords.includes(word)) {
+                    setSelectedWords(selectedWords.filter((w) => w !== word));
+                  } else if (selectedWords.length < 4) {
+                    setSelectedWords([...selectedWords, word]);
+                  }
+                }}
+              >
+                {word}
+              </WordTile>
+            ))}
+          </div>
+        )}
       </div>
 
       <div
@@ -159,15 +175,20 @@ export default function Page() {
                 }
 
                 setPoolAnimated(true);
-                await new Promise((res) => setTimeout(res, 500));
 
+                await new Promise((res) => setTimeout(res, 500));
                 setGuesses([...guesses, selectedWords]);
+                setSelectedWords([]);
                 setWordPool((pool) =>
                   pool.filter((word) => !selectedWords.includes(word)),
                 );
-                setSelectedWords([]);
+
                 setPoolAnimated(false);
               } else {
+                if (getCommonColors(gameOptions, selectedWords) === 3) {
+                  toast("One away...");
+                }
+
                 setGuesses([...guesses, selectedWords]);
                 setSelectedWords([]);
               }
@@ -233,6 +254,32 @@ function validateGuess(options: GameOptions, guess: string[]) {
   }
 
   return true;
+}
+
+/**
+ * Returns the maximum number of the same color in the given guess. For example,
+ * a guess with three blue words and one yellow word would return 3.
+ */
+function getCommonColors(options: GameOptions, guess: string[]) {
+  const numbers = [0, 0, 0, 0];
+
+  for (let word = 0; word < 4; word++) {
+    for (let color = 0; color < 4; color++) {
+      if (options.words[color].includes(guess[word])) {
+        numbers[color]++;
+        break;
+      }
+    }
+  }
+
+  let max = 0;
+  for (let color = 0; color < 4; color++) {
+    if (numbers[color] > max) {
+      max = numbers[color];
+    }
+  }
+
+  return max;
 }
 
 function getTotalMistakes(options: GameOptions, guesses: string[][]) {

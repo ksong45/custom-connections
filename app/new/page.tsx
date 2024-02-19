@@ -251,7 +251,7 @@ function TextInput({ text, setText, name, icon }: TextInputProps) {
       <input
         type="text"
         placeholder={name}
-        className="min-w-[304px] border-b border-stone-800 bg-stone-50 px-1 font-semibold uppercase"
+        className="min-w-[304px] border-b border-stone-900 bg-stone-50 px-1 font-semibold uppercase"
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
