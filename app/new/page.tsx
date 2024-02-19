@@ -101,13 +101,38 @@ export default function Page() {
         <CircularButton
           variant="filled"
           onClick={() => {
-            const obj: GameOptions = { names, words, author, title };
+            // create object and clean all inputs
+            const obj: GameOptions = {
+              names: names.map((word) => word.trim().toLowerCase()),
+              words: words.map((arr) =>
+                arr.map((word) => word.trim().toLowerCase()),
+              ),
+              author: author.trim().toLowerCase(),
+              title: title.trim().toLowerCase(),
+            };
 
-            if (!obj.words.flat().every((s) => s.trim().length > 0)) {
+            // validate that all fields are filled
+            if (!obj.words.flat().every((s) => s.length > 0)) {
               setError("Please enter all words.");
               return;
-            } else if (!obj.names.every((s) => s.trim().length > 0)) {
+            } else if (!obj.names.every((s) => s.length > 0)) {
               setError("Please enter all category names.");
+              return;
+            }
+
+            // validate that there aren't any duplicate words
+            const wordSet = new Set<string>();
+            words.flat().forEach((word) => wordSet.add(word));
+            if (wordSet.size !== 16) {
+              setError("Please remove any duplicate words.");
+              return;
+            }
+
+            // validate that there aren't any duplicate category names
+            const nameSet = new Set<string>();
+            names.forEach((name) => nameSet.add(name));
+            if (nameSet.size !== 4) {
+              setError("Please remove any duplicate category names.");
               return;
             }
 
