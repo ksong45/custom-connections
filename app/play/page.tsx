@@ -1,6 +1,7 @@
 "use client";
 
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { Metadata } from "next";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ComponentPropsWithoutRef, useEffect, useState } from "react";
@@ -11,6 +12,10 @@ import { GameOptions, gameOptionsSchema } from "~/lib/game-options";
 import { alphabetical } from "~/lib/utils";
 
 /* eslint-disable react-hooks/exhaustive-deps */
+
+export const metadata: Metadata = {
+  title: "Play my game of Custom Connections!",
+};
 
 export default function Page() {
   const params = useSearchParams();
