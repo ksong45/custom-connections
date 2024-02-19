@@ -17,7 +17,7 @@ export function CategoryNameInput({
       <input
         type="text"
         placeholder="CATEGORY NAME"
-        className="min-w-[304px] border-b border-black bg-stone-50 px-1 font-semibold uppercase"
+        className="min-w-[304px] border-b border-black bg-stone-50 px-1 font-semibold uppercase placeholder-stone-400"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
