@@ -2,16 +2,15 @@
 
 import { IconTextSize, IconUser } from "@tabler/icons-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 import { CircularButton } from "~/components/circular-button";
-import { colors } from "~/lib/colors";
+import { colors } from "~/lib/game";
 import { GameOptions, gameOptionsSchema } from "~/lib/game-options";
+import { range } from "~/lib/utils";
+import { CategoryInput } from "./category-input";
+import { TextInput } from "./text-input";
+
+/* eslint-disable react-hooks/exhaustive-deps */
 
 export default function Page() {
   const router = useRouter();
@@ -22,10 +21,17 @@ export default function Page() {
   const [blueWords, setBlueWords] = useState(["", "", "", ""]);
   const [purpleWords, setPurpleWords] = useState(["", "", "", ""]);
 
+  // prettier-ignore
+  const setWords = [setYellowWords, setGreenWords, setBlueWords, setPurpleWords];
+  const words = [yellowWords, greenWords, blueWords, purpleWords];
+
   const [yellowName, setYellowName] = useState("");
   const [greenName, setGreenName] = useState("");
   const [blueName, setBlueName] = useState("");
   const [purpleName, setPurpleName] = useState("");
+
+  const setNames = [setYellowName, setGreenName, setBlueName, setPurpleName];
+  const names = [yellowName, greenName, blueName, purpleName];
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -39,15 +45,8 @@ export default function Page() {
       const options = gameOptionsSchema.parse(decoded);
       console.log("setting game options from URL", options);
 
-      setYellowName(options.names[0]);
-      setGreenName(options.names[1]);
-      setBlueName(options.names[2]);
-      setPurpleName(options.names[3]);
-
-      setYellowWords(options.words[0]);
-      setGreenWords(options.words[1]);
-      setBlueWords(options.words[2]);
-      setPurpleWords(options.words[3]);
+      setNames.forEach((set, i) => set(options.names[i]));
+      setWords.forEach((set, i) => set(options.words[i]));
 
       setTitle(options.title);
       setAuthor(options.author);
@@ -74,53 +73,26 @@ export default function Page() {
         />
       </div>
 
-      <CategoryInput
-        color={colors[0]}
-        name={yellowName}
-        setName={setYellowName}
-        words={yellowWords}
-        setWords={setYellowWords}
-      />
-
-      <CategoryInput
-        color={colors[1]}
-        name={greenName}
-        setName={setGreenName}
-        words={greenWords}
-        setWords={setGreenWords}
-      />
-
-      <CategoryInput
-        color={colors[2]}
-        name={blueName}
-        setName={setBlueName}
-        words={blueWords}
-        setWords={setBlueWords}
-      />
-
-      <CategoryInput
-        color={colors[3]}
-        name={purpleName}
-        setName={setPurpleName}
-        words={purpleWords}
-        setWords={setPurpleWords}
-      />
+      {range(4).map((i) => (
+        <CategoryInput
+          key={i}
+          color={colors[i]}
+          name={names[i]}
+          setName={setNames[i]}
+          words={words[i]}
+          setWords={setWords[i]}
+        />
+      ))}
 
       <div className="flex flex-wrap items-center gap-4">
         <CircularButton
           onClick={() => {
-            setYellowName("");
-            setGreenName("");
-            setBlueName("");
-            setPurpleName("");
-
-            setYellowWords(["", "", "", ""]);
-            setGreenWords(["", "", "", ""]);
-            setBlueWords(["", "", "", ""]);
-            setPurpleWords(["", "", "", ""]);
+            setNames.forEach((set) => set(""));
+            setWords.forEach((set) => set(["", "", "", ""]));
 
             setTitle("");
             setAuthor("");
+            setError("");
           }}
         >
           Clear all
@@ -129,12 +101,7 @@ export default function Page() {
         <CircularButton
           variant="filled"
           onClick={() => {
-            const obj: GameOptions = {
-              names: [yellowName, greenName, blueName, purpleName],
-              words: [yellowWords, greenWords, blueWords, purpleWords],
-              author,
-              title,
-            };
+            const obj: GameOptions = { names, words, author, title };
 
             if (!obj.words.flat().every((s) => s.trim().length > 0)) {
               setError("Please enter all words.");
@@ -154,107 +121,5 @@ export default function Page() {
         {error && <p className="text-red-600">{error}</p>}
       </div>
     </main>
-  );
-}
-
-type WordInputProps = {
-  color: string;
-  i: number;
-  words: string[];
-  setWords: Dispatch<SetStateAction<string[]>>;
-};
-
-function WordInput({ color, i, words, setWords }: WordInputProps) {
-  return (
-    <input
-      type="text"
-      name={color + "-" + i}
-      className={`${color} rounded-md py-5 text-center font-semibold uppercase placeholder:text-slate-600/50`}
-      placeholder="WORD"
-      value={words[i]}
-      onChange={(e) =>
-        setWords((arr) => {
-          const newArr = [...arr];
-          newArr[i] = e.target.value;
-          return newArr;
-        })
-      }
-    />
-  );
-}
-
-type CategoryInputProps = {
-  color: string;
-  name: string;
-  setName: Dispatch<SetStateAction<string>>;
-  words: string[];
-  setWords: Dispatch<SetStateAction<string[]>>;
-};
-
-function CategoryInput({
-  color,
-  name,
-  setName,
-  words,
-  setWords,
-}: CategoryInputProps) {
-  return (
-    <>
-      <CategoryNameInput color={color} name={name} setName={setName} />
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-4">
-        {Array.from({ length: 4 }, (_, i) => i).map((i) => (
-          <WordInput
-            color={color}
-            i={i}
-            key={i}
-            words={words}
-            setWords={setWords}
-          />
-        ))}
-      </div>
-    </>
-  );
-}
-
-type CategoryNameInputProps = {
-  color: string;
-  name: string;
-  setName: Dispatch<SetStateAction<string>>;
-};
-
-function CategoryNameInput({ color, name, setName }: CategoryNameInputProps) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className={`${color} h-6 w-6 rounded-full`}></div>
-      <input
-        type="text"
-        placeholder="CATEGORY NAME"
-        className="min-w-[304px] border-b border-black bg-stone-50 px-1 font-semibold uppercase"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-    </div>
-  );
-}
-
-type TextInputProps = {
-  text: string;
-  setText: Dispatch<SetStateAction<string>>;
-  name: string;
-  icon: ReactNode;
-};
-
-function TextInput({ text, setText, name, icon }: TextInputProps) {
-  return (
-    <div className="flex items-center gap-2">
-      {icon}
-      <input
-        type="text"
-        placeholder={name}
-        className="min-w-[304px] border-b border-stone-900 bg-stone-50 px-1 font-semibold uppercase"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
-    </div>
   );
 }

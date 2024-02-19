@@ -3,12 +3,21 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ComponentPropsWithoutRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { CircularButton } from "~/components/circular-button";
-import { colors } from "~/lib/colors";
+import {
+  colors,
+  getColor,
+  getCommonColors,
+  getTotalMistakes,
+  regenerateWordPool,
+  validateGuess,
+} from "~/lib/game";
 import { GameOptions, gameOptionsSchema } from "~/lib/game-options";
-import { alphabetical } from "~/lib/utils";
+import { alphabetical, hasSameElements, range, toSwapped } from "~/lib/utils";
+import { FinishedCategory } from "./finished-category";
+import { WordTile } from "./word-tile";
 
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -129,12 +138,13 @@ export default function Page() {
         )}
       </div>
 
+      {/* display the mistakes that the user has left */}
       <div
         className="flex items-center gap-2 place-self-center sm:place-self-auto"
         ref={mistakesAnimateRef}
       >
         <p>Remaining mistakes:</p>
-        {Array.from({ length: remainingMistakes }, (_, i) => i).map((_, i) => (
+        {range(remainingMistakes).map((_, i) => (
           <span className="h-4 w-4 rounded-full bg-stone-600" key={i}></span>
         ))}
       </div>
@@ -204,138 +214,4 @@ export default function Page() {
       ) : null}
     </main>
   );
-}
-
-type WordTileProps = ComponentPropsWithoutRef<"button"> & { selected: boolean };
-
-function WordTile({ selected, ...props }: WordTileProps) {
-  return (
-    <button
-      className={`${selected ? "bg-stone-600 text-stone-50" : "bg-stone-200"} aspect-square break-words rounded-md p-2 text-center font-semibold uppercase leading-none transition-colors sm:aspect-auto sm:py-6 sm:text-base`}
-      {...props}
-    />
-  );
-}
-
-type FinishedCategoryProps = {
-  name: string;
-  words: string[];
-  color: string;
-};
-
-function FinishedCategory({ name, words, color }: FinishedCategoryProps) {
-  return (
-    <div
-      className={`${color} flex aspect-[4.25/1] flex-col justify-center rounded-md py-4 text-center uppercase leading-tight sm:aspect-auto`}
-    >
-      <p className="font-semibold">{name}</p>
-      <p>{words.join(", ")}</p>
-    </div>
-  );
-}
-
-function getColor(options: GameOptions, word: string) {
-  for (let i = 0; i < 4; i++) {
-    if (options.words[i].includes(word)) {
-      return i;
-    }
-  }
-
-  return -1; // not found
-}
-
-function validateGuess(options: GameOptions, guess: string[]) {
-  const first = getColor(options, guess[0]);
-
-  for (let i = 1; i < 4; i++) {
-    if (getColor(options, guess[i]) !== first) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-/**
- * Returns the maximum number of the same color in the given guess. For example,
- * a guess with three blue words and one yellow word would return 3.
- */
-function getCommonColors(options: GameOptions, guess: string[]) {
-  const numbers = [0, 0, 0, 0];
-
-  for (let word = 0; word < 4; word++) {
-    for (let color = 0; color < 4; color++) {
-      if (options.words[color].includes(guess[word])) {
-        numbers[color]++;
-        break;
-      }
-    }
-  }
-
-  let max = 0;
-  for (let color = 0; color < 4; color++) {
-    if (numbers[color] > max) {
-      max = numbers[color];
-    }
-  }
-
-  return max;
-}
-
-function getTotalMistakes(options: GameOptions, guesses: string[][]) {
-  let total = 0;
-
-  for (let i = 0; i < guesses.length; i++) {
-    if (validateGuess(options, guesses[i]) === false) {
-      total++;
-    }
-  }
-
-  return total;
-}
-
-function getRevealedColors(options: GameOptions, guesses: string[][]) {
-  const revealed = [false, false, false, false];
-
-  for (let i = 0; i < guesses.length; i++) {
-    if (validateGuess(options, guesses[i])) {
-      revealed[getColor(options, guesses[i][0])] = true;
-    }
-  }
-
-  return revealed;
-}
-
-function regenerateWordPool(options: GameOptions, guesses: string[][]) {
-  const revealedColors = getRevealedColors(options, guesses);
-  const wordPool: string[] = [];
-
-  for (let i = 0; i < 4; i++) {
-    if (revealedColors[i] === false) {
-      options.words[i].forEach((word) => wordPool.push(word));
-    }
-  }
-
-  wordPool.sort(() => Math.random() - 0.5);
-  return wordPool;
-}
-
-function toSwapped<T>(arr: T[], a: number, b: number) {
-  const newArr: T[] = [];
-
-  for (let i = 0; i < arr.length; i++) {
-    if (i === a) {
-      newArr[i] = arr[b];
-    } else if (i === b) {
-      newArr[i] = arr[a];
-    } else {
-      newArr[i] = arr[i];
-    }
-  }
-
-  return newArr;
-}
-
-function hasSameElements<T>(a: T[], b: T[]) {
-  return a.sort().join(",") === b.sort().join(",");
 }
