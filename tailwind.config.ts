@@ -10,10 +10,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "nyt-yellow": "#F5E07E",
-        "nyt-green": "#A7C268",
-        "nyt-blue": "#B4C3EB",
-        "nyt-purple": "#B283C1",
+        "nyt-yellow": "#F9DCBE",
+        "nyt-green": "#C9CBD2",
+        "nyt-blue": "#232D4B",
+        "nyt-purple": "#E57200",
         "nyt-lilac": "#B1A7F8",
         "nyt-light": "#EFEFE6",
         "nyt-dark": "#5A594E",

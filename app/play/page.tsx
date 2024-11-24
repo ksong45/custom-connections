@@ -59,7 +59,7 @@ export default function Page() {
 
   // derived state
   const totalMistakes = getTotalMistakes(gameOptions, guesses);
-  const remainingMistakes = 4 - totalMistakes;
+  const remainingMistakes = 5 - totalMistakes;
   const wonGame = wordPool.length === 0;
   const lostGame = remainingMistakes === 0;
   const submitDisabled =
@@ -210,7 +210,18 @@ export default function Page() {
       ) : wonGame ? (
         <p>You won, congrats!</p>
       ) : lostGame ? (
-        <p>You lost, refresh to try again!</p>
+        <div>
+          <p>Not quite, better luck next time!</p>
+          <p>Answers:</p>
+              {gameOptions.words.map((category, index) => (
+              <FinishedCategory
+                key={index}
+                name={gameOptions.names[getColor(gameOptions, category[0])]}
+                words={category}
+                color={colors[getColor(gameOptions, category[0])]}
+              />
+          ))}
+        </div>
       ) : null}
     </main>
   );

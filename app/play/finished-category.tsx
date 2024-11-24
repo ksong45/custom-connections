@@ -11,7 +11,7 @@ export function FinishedCategory({
 }: FinishedCategoryProps) {
   return (
     <div
-      className={`${color} flex aspect-[4.25/1] flex-col justify-center rounded-md py-4 text-center uppercase leading-tight sm:aspect-auto`}
+      className={`${color} flex flex-col justify-center rounded-full px-8 py-4 text-center uppercase leading-tight transition sm:px-10 sm:py-5`}
     >
       <p className="font-semibold">{name}</p>
       <p>{words.join(", ")}</p>
