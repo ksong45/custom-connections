@@ -94,11 +94,11 @@ export default function Page() {
             href={`/new?options=${params.get("options")}`}
             className="underline"
           >
-            remix this game
+            {/*remix this game*/}
           </Link>{" "}
-          or{" "}
+          {/*or{" "}*/}
           <Link href="/new" className="underline">
-            create your own
+            {/*create your own*/}
           </Link>
         </p>
       </div>
