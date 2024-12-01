@@ -223,6 +223,9 @@ export default function Page() {
           ))}
         </div>
       ) : null}
+      <div>
+        <p style={{ textAlign: 'center' }}>Credits: Cavalier Daily and Zachary Robinson</p>
+      </div>
     </main>
   );
 }
