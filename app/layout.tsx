@@ -5,7 +5,7 @@ import "./globals.css";
 /* eslint-disable @next/next/no-img-element */
 
 export const metadata: Metadata = {
-  title: "Custom Connections",
+  title: "Cavalier Clusters",
   description: "Create your own custom game of connections.",
 };
 
@@ -23,7 +23,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
 
           <div>
-            <h1 className="text-2xl font-bold">Custom Connections</h1>
+            <h1 className="text-2xl font-bold">Cavalier Clusters</h1>
             <p>Group words that share a common thread.</p>
           </div>
         </header>
