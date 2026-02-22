@@ -52,42 +52,42 @@ export default function Page() {
     }
   }, []);
 
-  // derived state
-  const totalMistakes = getTotalMistakes(gameOptions, guesses);
-  const remainingMistakes = 4 - totalMistakes; // ← 4 mistakes max
-  const solvedCount = guesses.filter((g) => validateGuess(gameOptions, g)).length;
+  // derived state (SAFE even when gameOptions is undefined)
+  const totalMistakes = gameOptions ? getTotalMistakes(gameOptions, guesses) : 0;
+  const remainingMistakes = 4 - totalMistakes;
+
+  const solvedCount = gameOptions
+    ? guesses.filter((g) => validateGuess(gameOptions, g)).length
+    : 0;
+
   const wonGame = gameResult === "won";
   const lostGame = gameResult === "lost";
+
   const submitDisabled =
     selectedWords.length !== 4 ||
     guesses.some((guess) => hasSameElements(guess, selectedWords));
 
   useEffect(() => {
-    if (!lostGame) return;
+    if (!lostGame || !gameOptions) return;
 
     setPoolAnimated(true);
-
     setTimeout(() => {
-      setGuesses([...gameOptions.words]); // reveal all correct groups
-      setWordPool([]);                    // remove the grid
+      setGuesses([...gameOptions.words]);
+      setWordPool([]);
       setSelectedWords([]);
       setPoolAnimated(false);
     }, 300);
-  }, [lostGame]);
+  }, [lostGame, gameOptions]);
 
   useEffect(() => {
-    if (gameResult !== "playing") return;
-    if (solvedCount === 4) {
-      setGameResult("won");
-    }
-  }, [solvedCount, gameResult]);
+    if (gameResult !== "playing" || !gameOptions) return;
+    if (solvedCount === 4) setGameResult("won");
+  }, [solvedCount, gameResult, gameOptions]);
 
   useEffect(() => {
-    if (gameResult !== "playing") return;
-    if (remainingMistakes === 0) {
-      setGameResult("lost");
-    }
-  }, [remainingMistakes, gameResult]);
+    if (gameResult !== "playing" || !gameOptions) return;
+    if (remainingMistakes === 0) setGameResult("lost");
+  }, [remainingMistakes, gameResult, gameOptions]);
 
   useEffect(() => {
     if (!wonGame) return;
