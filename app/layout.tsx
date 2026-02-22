@@ -24,7 +24,6 @@ export default function Layout({ children }: { children: ReactNode }) {
 
           <div>
             <h1 className="text-2xl font-bold">Cavalier Clusters</h1>
-            <p>Group words that share a common thread.</p>
           </div>
         </header>
         <hr className="border-stone-300" />

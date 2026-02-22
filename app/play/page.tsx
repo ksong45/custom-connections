@@ -1,5 +1,6 @@
 "use client";
 
+import confetti from "canvas-confetti";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -26,10 +27,12 @@ export default function Page() {
   const [mistakesAnimateRef] = useAutoAnimate();
   const [poolAnimateRef, setPoolAnimated] = useAutoAnimate();
 
+  const [gameResult, setGameResult] = useState<"playing" | "won" | "lost">("playing");
   const [gameOptions, setGameOptions] = useState<GameOptions | undefined>();
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [wordPool, setWordPool] = useState<string[]>([]);
   const [guesses, setGuesses] = useState<string[][]>([]);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     if (!params.has("options")) return;
@@ -37,13 +40,10 @@ export default function Page() {
     try {
       const decoded = JSON.parse(atob(params.get("options")!));
       const options = gameOptionsSchema.parse(decoded);
-      console.info("setting game options from URL", options);
 
       for (let i = 0; i < 4; i++) {
         options.words[i].sort(alphabetical);
       }
-
-      console.info("setting game options from URL", options);
 
       setGameOptions(options);
       setWordPool(regenerateWordPool(options, guesses));
@@ -52,55 +52,122 @@ export default function Page() {
     }
   }, []);
 
-  // ensure that gameOptions won't be undefined
-  if (gameOptions === undefined) {
-    return <main></main>;
-  }
-
   // derived state
   const totalMistakes = getTotalMistakes(gameOptions, guesses);
-  const remainingMistakes = 5 - totalMistakes;
-  const wonGame = wordPool.length === 0;
-  const lostGame = remainingMistakes === 0;
+  const remainingMistakes = 4 - totalMistakes; // ← 4 mistakes max
+  const solvedCount = guesses.filter((g) => validateGuess(gameOptions, g)).length;
+  const wonGame = gameResult === "won";
+  const lostGame = gameResult === "lost";
   const submitDisabled =
     selectedWords.length !== 4 ||
     guesses.some((guess) => hasSameElements(guess, selectedWords));
 
+  useEffect(() => {
+    if (!lostGame) return;
+
+    setPoolAnimated(true);
+
+    setTimeout(() => {
+      setGuesses([...gameOptions.words]); // reveal all correct groups
+      setWordPool([]);                    // remove the grid
+      setSelectedWords([]);
+      setPoolAnimated(false);
+    }, 300);
+  }, [lostGame]);
+
+  useEffect(() => {
+    if (gameResult !== "playing") return;
+    if (solvedCount === 4) {
+      setGameResult("won");
+    }
+  }, [solvedCount, gameResult]);
+
+  useEffect(() => {
+    if (gameResult !== "playing") return;
+    if (remainingMistakes === 0) {
+      setGameResult("lost");
+    }
+  }, [remainingMistakes, gameResult]);
+
+  useEffect(() => {
+    if (!wonGame) return;
+
+    // Blue & Orange confetti burst
+    const duration = 2000;
+    const end = Date.now() + duration;
+
+    const colors = ["#1d4ed8", "#f97316"]; // blue, orange (Tailwind-ish)
+
+    const frame = () => {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors,
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors,
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+
+    frame();
+  }, [wonGame]);
+
+  if (gameOptions === undefined) {
+    return <main className="flex flex-col gap-4"></main>;
+  }
+
   return (
     <main className="flex flex-col gap-4">
-      <div>
-        <Toaster
-          containerStyle={{
-            position: "relative",
-            inset: 0,
-            flexShrink: 0,
-          }}
-          toastOptions={{
-            duration: 3000,
-            className:
-              "!shrink-0 !rounded-md !bg-stone-900 !p-2 !text-stone-50 !shadow-md",
-          }}
-        />
+      {/* Top bar with help button */}
+      <div className="flex items-start justify-between">
+        <div>
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 3000,
+              className:
+                "!shrink-0 !rounded-md !bg-stone-900 !p-2 !text-stone-50 !shadow-md",
+            }}
+          />
 
-        <h2>
-          <span className="text-2xl font-semibold">
-            {gameOptions.title.toUpperCase()}
-          </span>{" "}
-          by {gameOptions.author.toUpperCase()}
-        </h2>
+          <h2>
+            <span className="text-2xl font-semibold">
+              {gameOptions.title.toUpperCase()}
+            </span>{" "}
+            by {gameOptions.author.toUpperCase()}
+          </h2>
 
-        <p className="text-stone-500">
-          <Link
-            href={`/new?options=${params.get("options")}`}
-            className="underline"
-          >
-            {/*remix this game*/}
-          </Link>{" "}
-          {/*or{" "}*/}
-          <Link href="/new" className="underline">
-            {/*create your own*/}
-          </Link>
-        </p>
+          <p className="text-stone-500">
+            <Link
+              href={`/new?options=${params.get("options")}`}
+              className="underline"
+            >
+              {/* remix this game */}
+            </Link>{" "}
+            <Link href="/new" className="underline">
+              {/* create your own */}
+            </Link>
+          </p>
+        </div>
+
+        {/* ? Help button */}
+        <button
+          onClick={() => setShowHelp(true)}
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-400 text-xl font-bold hover:bg-stone-100"
+          aria-label="How to play"
+        >
+          ?
+        </button>
       </div>
 
       <div className="flex flex-col gap-2 sm:gap-4">
@@ -117,7 +184,7 @@ export default function Page() {
         )}
 
         {/* grid from the word pool */}
-        {wordPool.length > 0 && (
+        {wordPool.length > 0 && !lostGame && !wonGame && (
           <div className="grid grid-cols-4 gap-2 sm:gap-4" ref={poolAnimateRef}>
             {wordPool.map((word) => (
               <WordTile
@@ -144,7 +211,7 @@ export default function Page() {
         ref={mistakesAnimateRef}
       >
         <p>Remaining mistakes:</p>
-        {range(remainingMistakes).map((_, i) => (
+        {range(Math.max(0, remainingMistakes)).map((_, i) => (
           <span className="h-4 w-4 rounded-full bg-stone-600" key={i}></span>
         ))}
       </div>
@@ -173,10 +240,8 @@ export default function Page() {
               const result = validateGuess(gameOptions, selectedWords);
 
               if (result === true) {
-                // sort so the words swap to the right order
                 const sortedSelected = selectedWords.toSorted(alphabetical);
 
-                // swap guesses into the beginning of the pool
                 for (let a = 0; a < 4; a++) {
                   setWordPool((pool) => {
                     const b = pool.indexOf(sortedSelected[a]);
@@ -208,24 +273,93 @@ export default function Page() {
           </CircularButton>
         </div>
       ) : wonGame ? (
-        <p>You won, congrats!</p>
+        <div className="flex flex-col items-center justify-center py-6">
+          <p className="text-3xl sm:text-4xl font-bold text-center">
+            You won, congrats!
+          </p>
+        </div>
       ) : lostGame ? (
-        <div>
-          <p>Not quite, better luck next time!</p>
-          <p>Answers:</p>
-              {gameOptions.words.map((category, index) => (
-              <FinishedCategory
-                key={index}
-                name={gameOptions.names[getColor(gameOptions, category[0])]}
-                words={category}
-                color={colors[getColor(gameOptions, category[0])]}
-              />
-          ))}
+        <div className="flex flex-col items-center justify-center py-6">
+          <p className="text-base text-center text-stone-700">
+            Not quite, better luck next time!
+          </p>
         </div>
       ) : null}
+
       <div>
-        <p style={{ textAlign: 'center' }}>Credits: Cavalier Daily and Zachary Robinson</p>
+        <p style={{ textAlign: "center" }}>
+          Credits: Zachary Robinson, adapted by Kyle Song
+        </p>
       </div>
+
+      {/* Help Modal */}
+      {showHelp && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="relative max-h-[90vh] w-[90vw] max-w-2xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
+            <button
+              onClick={() => setShowHelp(false)}
+              className="absolute right-4 top-4 text-2xl font-bold text-stone-600 hover:text-black"
+              aria-label="Close"
+            >
+              ×
+            </button>
+
+            <h2 className="mb-2 text-2xl font-bold">How to Play</h2>
+            <p className="mb-4 text-stone-700">
+              Find groups of four items that share something in common.
+            </p>
+
+            <ul className="mb-4 list-disc pl-5 text-stone-700">
+              <li>
+                Select four items and tap <strong>Submit</strong> to check if your
+                guess is correct.
+              </li>
+              <li>Find the groups without making 4 mistakes!</li>
+            </ul>
+
+            <h3 className="mb-2 text-lg font-semibold">Category Examples</h3>
+            <ul className="mb-4 list-disc pl-5 text-stone-700">
+              <li>
+                <strong>FISH</strong>: Bass, Flounder, Salmon, Trout
+              </li>
+              <li>
+                <strong>FIRE ___</strong>: Ant, Drill, Island, Opal
+              </li>
+            </ul>
+
+            <p className="mb-4 text-stone-700">
+              Categories will always be more specific than "5-LETTER-WORDS",
+              "NAMES" or "VERBS".
+            </p>
+
+            <p className="mb-4 text-stone-700">
+              Each puzzle has exactly one solution. Watch out for words that seem
+              to belong to multiple categories!
+            </p>
+            <div className="mt-6">
+              <p className="mb-3 text-center text-stone-700">
+                Each group is assigned a color based on difficulty:
+              </p>
+
+              <div className="flex justify-center gap-6">
+                {[
+                  { label: "Straightforward", colorClass: colors[0] },
+                  { label: "Moderate", colorClass: colors[1] },
+                  { label: "Challenging", colorClass: colors[2] },
+                  { label: "Tricky", colorClass: colors[3] },
+                ].map((item) => (
+                  <div key={item.label} className="flex flex-col items-center gap-2">
+                    <div
+                      className={`h-8 w-8 rounded-md border border-stone-300 ${item.colorClass}`}
+                    />
+                    <span className="text-xs text-stone-700">{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
