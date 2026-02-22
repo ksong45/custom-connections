@@ -328,8 +328,7 @@ export default function Page() {
             </ul>
 
             <p className="mb-4 text-stone-700">
-              Categories will always be more specific than "5-LETTER-WORDS",
-              "NAMES" or "VERBS".
+              Categories will always be more specific than &quot;5-LETTER-WORDS&quot;, &quot;NAMES&quot; or &quot;VERBS&quot;.
             </p>
 
             <p className="mb-4 text-stone-700">
