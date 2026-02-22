@@ -288,7 +288,7 @@ export default function Page() {
 
       <div>
         <p style={{ textAlign: "center" }}>
-          Credits: Zachary Robinson, adapted by Kyle Song
+          Credits: Original by Zachary Robinson. Improved and extended by Kyle Song.
         </p>
       </div>
 
