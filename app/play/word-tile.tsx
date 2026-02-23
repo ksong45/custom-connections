@@ -11,9 +11,10 @@ export function WordTile({ selected, ...props }: WordTileProps) {
         px-4 py-2 sm:px-8 sm:py-4
         text-center font-semibold uppercase
         leading-tight
-        break-words whitespace-normal
+        whitespace-nowrap
         overflow-hidden
-        text-[clamp(12px,3.5vw,16px)]
+        text-ellipsis
+        text-[clamp(11px,3vw,16px)]
         transition active:scale-95
       `}
       {...props}
