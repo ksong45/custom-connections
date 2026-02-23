@@ -306,34 +306,33 @@ export default function Page() {
 
             <h2 className="mb-2 text-2xl font-bold">How to Play</h2>
             <p className="mb-4 text-stone-700">
-              Find groups of four items that share something in common.
+              Sort the 16 tiles into four clusters of four tiles.
             </p>
 
             <ul className="mb-4 list-disc pl-5 text-stone-700">
               <li>
-                Select four items and tap <strong>Submit</strong> to check if your
+                Select four tiles and tap <strong>Submit</strong> to check if your
                 guess is correct.
               </li>
               <li>Find the groups without making 4 mistakes!</li>
             </ul>
 
-            <h3 className="mb-2 text-lg font-semibold">Category Examples</h3>
+            <h3 className="mb-2 text-lg font-semibold">Cluster Examples</h3>
             <ul className="mb-4 list-disc pl-5 text-stone-700">
               <li>
-                <strong>FISH</strong>: Bass, Flounder, Salmon, Trout
+                <strong>UVA DORMS</strong>: Page, Shannon, Gooch, Gibbons
               </li>
               <li>
-                <strong>FIRE ___</strong>: Ant, Drill, Island, Opal
+                <strong>CAVALIER ___</strong>: Daily, Advantage, Marching Band, Computers
               </li>
             </ul>
 
             <p className="mb-4 text-stone-700">
-              Categories will always be more specific than &quot;5-LETTER-WORDS&quot;, &quot;NAMES&quot; or &quot;VERBS&quot;.
+              Clusters will always be more specific than &quot;5-LETTER-WORDS&quot;, &quot;NAMES&quot; or &quot;VERBS&quot;.
             </p>
 
             <p className="mb-4 text-stone-700">
-              Each puzzle has exactly one solution. Watch out for words that seem
-              to belong to multiple categories!
+              Each puzzle has exactly one solution.
             </p>
             <div className="mt-6">
               <p className="mb-3 text-center text-stone-700">
