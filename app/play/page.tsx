@@ -25,21 +25,21 @@ function buildShareText(
   guesses: string[][],
   totalMistakes: number,
 ) {
-  const colorEmojis = ["🟩", "🟨", "🟦", "🟪"];
+  const colorEmojis = ["🟩", "🟨", "🟦", "🟪", "⬛"]; // last = wrong
 
-  const solvedLines = guesses
-    .filter((g) => validateGuess(gameOptions, g))
-    .map((g) => {
+  const lines = guesses.map((g) => {
+    if (validateGuess(gameOptions, g)) {
       const color = getColor(gameOptions, g[0]); // 0..3
       return colorEmojis[color].repeat(4);
-    });
-
-  const titleLine = `${gameOptions.title}`;
+    } else {
+      return colorEmojis[4].repeat(4); // wrong guess row
+    }
+  });
 
   return [
-    titleLine,
+    gameOptions.title,
     "",
-    ...solvedLines,
+    ...lines,
     "",
     `Mistakes: ${totalMistakes}/4`,
   ].join("\n");
