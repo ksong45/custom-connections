@@ -25,15 +25,17 @@ function buildShareText(
   guesses: string[][],
   totalMistakes: number,
 ) {
-  const colorEmojis = ["🟩", "🟨", "🟦", "🟪", "⬛"]; // last = wrong
+  const colorEmojis = ["🟨", "⬜️", "🟧", "🟦"];
 
   const lines = guesses.map((g) => {
-    if (validateGuess(gameOptions, g)) {
-      const color = getColor(gameOptions, g[0]); // 0..3
-      return colorEmojis[color].repeat(4);
-    } else {
-      return colorEmojis[4].repeat(4); // wrong guess row
-    }
+    // Map each word in the guess to its color index (0..3)
+    const colors = g.map((word) => getColor(gameOptions, word));
+
+    // Sort so similar colors group together (NYT style)
+    colors.sort((a, b) => a - b);
+
+    // Convert to emoji row
+    return colors.map((c) => colorEmojis[c]).join("");
   });
 
   return [
@@ -118,7 +120,7 @@ export default function Page() {
     if (!wonGame) return;
 
     // Blue & Orange confetti burst
-    const duration = 2000;
+    const duration = 1000;
     const end = Date.now() + duration;
 
     const colors = ["#1d4ed8", "#f97316"]; // blue, orange (Tailwind-ish)

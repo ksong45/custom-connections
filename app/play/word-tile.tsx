@@ -3,7 +3,7 @@ import { ComponentPropsWithoutRef, useLayoutEffect, useMemo, useRef, useState } 
 type WordTileProps = ComponentPropsWithoutRef<"button"> & { selected: boolean };
 
 const MAX_FONT = 16;
-const MIN_FONT = 11;
+const MIN_FONT = 10; // tweak to taste
 
 export function WordTile({ selected, children, ...props }: WordTileProps) {
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -12,7 +12,10 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
   const [fontPx, setFontPx] = useState(MAX_FONT);
   const [wrap, setWrap] = useState(false);
 
-  const text = useMemo(() => (typeof children === "string" ? children : ""), [children]);
+  const text = useMemo(
+    () => (typeof children === "string" ? children : ""),
+    [children],
+  );
 
   useLayoutEffect(() => {
     const btn = btnRef.current;
@@ -20,7 +23,10 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
     if (!btn || !span) return;
 
     const measure = () => {
-      const available = btn.clientWidth - 32; // approx padding
+      const styles = getComputedStyle(btn);
+      const paddingLeft = parseFloat(styles.paddingLeft || "0");
+      const paddingRight = parseFloat(styles.paddingRight || "0");
+      const available = btn.clientWidth - paddingLeft - paddingRight;
 
       // force single-line for fit test
       span.style.whiteSpace = "nowrap";
@@ -74,7 +80,7 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
         font-semibold uppercase leading-tight
         transition active:scale-95
 
-        flex items-center justify-center text-center   /* 👈 THIS fixes centering */
+        flex items-center justify-center text-center
       `}
       {...props}
     >
