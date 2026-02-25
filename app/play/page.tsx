@@ -20,6 +20,31 @@ import { alphabetical, hasSameElements, range, toSwapped } from "~/lib/utils";
 import { FinishedCategory } from "./finished-category";
 import { WordTile } from "./word-tile";
 
+function buildShareText(
+  gameOptions: GameOptions,
+  guesses: string[][],
+  totalMistakes: number,
+) {
+  const colorEmojis = ["🟩", "🟨", "🟦", "🟪"];
+
+  const solvedLines = guesses
+    .filter((g) => validateGuess(gameOptions, g))
+    .map((g) => {
+      const color = getColor(gameOptions, g[0]); // 0..3
+      return colorEmojis[color].repeat(4);
+    });
+
+  const titleLine = `${gameOptions.title}`;
+
+  return [
+    titleLine,
+    "",
+    ...solvedLines,
+    "",
+    `Mistakes: ${totalMistakes}/4`,
+  ].join("\n");
+}
+
 /* eslint-disable react-hooks/exhaustive-deps */
 
 export default function Page() {
@@ -272,19 +297,42 @@ export default function Page() {
             Submit
           </CircularButton>
         </div>
-      ) : wonGame ? (
-        <div className="flex flex-col items-center justify-center py-6">
-          <p className="text-3xl sm:text-4xl font-bold text-center">
-            You won, congrats!
-          </p>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-6 gap-4">
+          {wonGame ? (
+            <p className="text-3xl sm:text-4xl font-bold text-center">
+              You won, congrats!
+            </p>
+          ) : (
+            <p className="text-base text-center text-stone-700">
+              Not quite, better luck next time!
+            </p>
+          )}
+
+          <CircularButton
+            variant="filled"
+            onClick={async () => {
+              const text = buildShareText(gameOptions, guesses, totalMistakes);
+
+              // Try native share first (mobile, some desktops)
+              if (navigator.share) {
+                try {
+                  await navigator.share({ text });
+                  return;
+                } catch {
+                  // fall through to clipboard
+                }
+              }
+
+              // Fallback: copy to clipboard
+              await navigator.clipboard.writeText(text);
+              toast("Results copied to clipboard!");
+            }}
+          >
+            Share
+          </CircularButton>
         </div>
-      ) : lostGame ? (
-        <div className="flex flex-col items-center justify-center py-6">
-          <p className="text-base text-center text-stone-700">
-            Not quite, better luck next time!
-          </p>
-        </div>
-      ) : null}
+      )}
 
       <div>
         <p style={{ textAlign: "center" }}>
