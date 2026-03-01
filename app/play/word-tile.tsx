@@ -53,15 +53,13 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
 
       span.style.fontSize = `${best}px`;
 
-      // If it fits comfortably on one line, keep it single-line
-      const fitsSingleLine =
-        span.scrollWidth <= available - 4;
+      const fitsSingleLine = span.scrollWidth <= available - 4;
 
-      if (fitsSingleLine && best > MIN_SINGLE_LINE) {
+      // Only keep single-line if it fits AND the font is reasonably large
+      if (fitsSingleLine && best >= MIN_READABLE_SINGLE) {
         setFontPx(best);
         setWrap(false);
       } else {
-        // Otherwise wrap at readable size
         setFontPx(WRAP_FONT);
         setWrap(true);
       }
