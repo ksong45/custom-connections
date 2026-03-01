@@ -53,23 +53,18 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
 
       span.style.fontSize = `${best}px`;
 
-      // If it fits comfortably above readable threshold → single line
-      if (best >= MIN_READABLE_SINGLE) {
+      // If it fits comfortably on one line, keep it single-line
+      const fitsSingleLine =
+        span.scrollWidth <= available - 4;
+
+      if (fitsSingleLine && best > MIN_SINGLE_LINE) {
         setFontPx(best);
         setWrap(false);
-        return;
-      }
-
-      // If it fits but is too small → prefer wrapping at readable size
-      if (best >= MIN_SINGLE_LINE) {
+      } else {
+        // Otherwise wrap at readable size
         setFontPx(WRAP_FONT);
         setWrap(true);
-        return;
       }
-
-      // If it doesn't even fit at MIN_SINGLE_LINE → must wrap
-      setFontPx(WRAP_FONT);
-      setWrap(true);
     };
 
     const ro = new ResizeObserver(measure);
@@ -103,7 +98,7 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
         style={{ fontSize: `${fontPx}px` }}
         className={
           wrap
-            ? "block whitespace-normal [overflow-wrap:anywhere]"
+            ? "block whitespace-normal break-words"
             : "block whitespace-nowrap"
         }
       >
