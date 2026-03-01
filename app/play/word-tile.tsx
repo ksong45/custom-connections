@@ -3,7 +3,9 @@ import { ComponentPropsWithoutRef, useLayoutEffect, useMemo, useRef, useState } 
 type WordTileProps = ComponentPropsWithoutRef<"button"> & { selected: boolean };
 
 const MAX_FONT = 16;
-const MIN_FONT = 10; // tweak to taste
+const MIN_SINGLE_LINE = 7;
+const WRAP_FONT = 9; 
+const MIN_READABLE_SINGLE = 10;
 
 export function WordTile({ selected, children, ...props }: WordTileProps) {
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -33,9 +35,9 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
       span.style.wordBreak = "normal";
       span.style.overflowWrap = "normal";
 
-      let lo = MIN_FONT;
+      let lo = MIN_SINGLE_LINE
       let hi = MAX_FONT;
-      let best = MIN_FONT;
+      let best = MIN_SINGLE_LINE;
 
       while (lo <= hi) {
         const mid = Math.floor((lo + hi) / 2);
@@ -51,20 +53,23 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
 
       span.style.fontSize = `${best}px`;
 
-      const fitsHorizontally = span.scrollWidth <= available - 4;
-      const fitsVertically = span.scrollHeight <= btn.clientHeight - 4;
-
-      if (best > MIN_FONT && fitsHorizontally && fitsVertically) {
+      // If it fits comfortably above readable threshold → single line
+      if (best >= MIN_READABLE_SINGLE) {
         setFontPx(best);
         setWrap(false);
-      } else {
-        // Allow wrapping mode
-        span.style.whiteSpace = "normal";
-        span.style.wordBreak = "break-word";
-
-        setFontPx(MIN_FONT);
-        setWrap(true);
+        return;
       }
+
+      // If it fits but is too small → prefer wrapping at readable size
+      if (best >= MIN_SINGLE_LINE) {
+        setFontPx(WRAP_FONT);
+        setWrap(true);
+        return;
+      }
+
+      // If it doesn't even fit at MIN_SINGLE_LINE → must wrap
+      setFontPx(WRAP_FONT);
+      setWrap(true);
     };
 
     const ro = new ResizeObserver(measure);
