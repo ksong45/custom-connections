@@ -30,12 +30,11 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
       const paddingRight = parseFloat(styles.paddingRight || "0");
       const available = btn.clientWidth - paddingLeft - paddingRight;
 
-      // force single-line for fit test
+      // Measure single-line only to determine max font
+      const prevWhiteSpace = span.style.whiteSpace;
       span.style.whiteSpace = "nowrap";
-      span.style.wordBreak = "normal";
-      span.style.overflowWrap = "normal";
 
-      let lo = MIN_SINGLE_LINE
+      let lo = MIN_SINGLE_LINE;
       let hi = MAX_FONT;
       let best = MIN_SINGLE_LINE;
 
@@ -43,7 +42,7 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
         const mid = Math.floor((lo + hi) / 2);
         span.style.fontSize = `${mid}px`;
 
-        if (span.scrollWidth <= available - 4 && span.scrollHeight <= btn.clientHeight - 4) {
+        if (span.scrollWidth <= available - 4) {
           best = mid;
           lo = mid + 1;
         } else {
@@ -51,18 +50,13 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
         }
       }
 
-      span.style.fontSize = `${best}px`;
+      span.style.whiteSpace = prevWhiteSpace;
 
-      const fitsSingleLine = span.scrollWidth <= available - 4;
+      // Apply final font
+      setFontPx(best);
 
-      // Only keep single-line if it fits AND the font is reasonably large
-      if (fitsSingleLine && best >= MIN_READABLE_SINGLE) {
-        setFontPx(best);
-        setWrap(false);
-      } else {
-        setFontPx(WRAP_FONT);
-        setWrap(true);
-      }
+      // Always allow wrapping
+      setWrap(true);
     };
 
     const ro = new ResizeObserver(measure);
@@ -82,7 +76,7 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
         rounded-full
         px-4 py-2 sm:px-8 sm:py-4
 
-        min-h-[3.5rem] sm:min-h-[4.5rem]
+        min-h-[3.5rem] sm:min-h-[4.5rem] h-auto
 
         font-semibold uppercase leading-tight
         transition active:scale-95
@@ -94,11 +88,7 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
       <span
         ref={spanRef}
         style={{ fontSize: `${fontPx}px` }}
-        className={
-          wrap
-            ? "block whitespace-normal break-words"
-            : "block whitespace-nowrap"
-        }
+        className="block whitespace-normal break-words"
       >
         {children}
       </span>
