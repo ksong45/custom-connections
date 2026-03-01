@@ -41,7 +41,7 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
         const mid = Math.floor((lo + hi) / 2);
         span.style.fontSize = `${mid}px`;
 
-        if (span.scrollWidth <= available) {
+        if (span.scrollWidth <= available - 2) {
           best = mid;
           lo = mid + 1;
         } else {
@@ -63,6 +63,7 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
     const ro = new ResizeObserver(measure);
     ro.observe(btn);
     measure();
+    requestAnimationFrame(measure);
 
     return () => ro.disconnect();
   }, [text]);
@@ -71,6 +72,7 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
     <button
       ref={btnRef}
       className={`
+        w-full
         ${selected ? "bg-stone-600 text-stone-50" : "bg-stone-200"}
         rounded-full
         px-4 py-2 sm:px-8 sm:py-4
