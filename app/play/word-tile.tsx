@@ -41,7 +41,7 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
         const mid = Math.floor((lo + hi) / 2);
         span.style.fontSize = `${mid}px`;
 
-        if (span.scrollWidth <= available - 2) {
+        if (span.scrollWidth <= available - 4 && span.scrollHeight <= btn.clientHeight - 4) {
           best = mid;
           lo = mid + 1;
         } else {
@@ -51,10 +51,17 @@ export function WordTile({ selected, children, ...props }: WordTileProps) {
 
       span.style.fontSize = `${best}px`;
 
-      if (best > MIN_FONT || span.scrollWidth <= available) {
+      const fitsHorizontally = span.scrollWidth <= available - 4;
+      const fitsVertically = span.scrollHeight <= btn.clientHeight - 4;
+
+      if (best > MIN_FONT && fitsHorizontally && fitsVertically) {
         setFontPx(best);
         setWrap(false);
       } else {
+        // Allow wrapping mode
+        span.style.whiteSpace = "normal";
+        span.style.wordBreak = "break-word";
+
         setFontPx(MIN_FONT);
         setWrap(true);
       }
