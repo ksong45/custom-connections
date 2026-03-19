@@ -341,7 +341,9 @@ export default function Page() {
       <div>
         <p style={{ textAlign: "center" }}>
           Credits: Original by Zachary Robinson. Improved and extended by Kyle Song. 
-          Inspired by NYTimes’ Connections ©
+        </p>
+        <p style={{ textAlign: "center" }}>
+          Inspired by The New York Times' Connections ©
         </p>
       </div>
 
