@@ -343,7 +343,7 @@ export default function Page() {
           Credits: Original by Zachary Robinson. Improved and extended by Kyle Song. 
         </p>
         <p style={{ textAlign: "center" }}>
-          Inspired by The New York Times' Connections ©
+          Inspired by The New York Times&apos; Connections ©
         </p>
       </div>
 
