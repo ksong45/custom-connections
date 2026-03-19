@@ -20,6 +20,8 @@ import { alphabetical, hasSameElements, range, toSwapped } from "~/lib/utils";
 import { FinishedCategory } from "./finished-category";
 import { WordTile } from "./word-tile";
 
+const MAX_MISTAKES = 5;
+
 function buildShareText(
   gameOptions: GameOptions,
   guesses: string[][],
@@ -43,7 +45,7 @@ function buildShareText(
     "",
     ...lines,
     "",
-    `Mistakes: ${totalMistakes}/4`,
+    `Mistakes: ${totalMistakes}/${MAX_MISTAKES}`,
   ].join("\n");
 }
 
@@ -81,7 +83,8 @@ export default function Page() {
 
   // derived state (SAFE even when gameOptions is undefined)
   const totalMistakes = gameOptions ? getTotalMistakes(gameOptions, guesses) : 0;
-  const remainingMistakes = 4 - totalMistakes;
+
+  const remainingMistakes = MAX_MISTAKES - totalMistakes;
 
   const solvedCount = gameOptions
     ? guesses.filter((g) => validateGuess(gameOptions, g)).length
@@ -190,10 +193,9 @@ export default function Page() {
         {/* ? Help button */}
         <button
           onClick={() => setShowHelp(true)}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-400 text-xl font-bold hover:bg-stone-100"
-          aria-label="How to play"
+          className="px-4 py-2 rounded-md border border-stone-300 bg-white text-sm font-medium text-stone-800 shadow-sm hover:bg-stone-100 transition"
         >
-          ?
+          Help
         </button>
       </div>
 
@@ -237,7 +239,7 @@ export default function Page() {
         className="flex items-center gap-2 place-self-center sm:place-self-auto"
         ref={mistakesAnimateRef}
       >
-        <p>Remaining mistakes:</p>
+        <p>Attempts left:</p>
         {range(Math.max(0, remainingMistakes)).map((_, i) => (
           <span className="h-4 w-4 rounded-full bg-stone-600" key={i}></span>
         ))}
@@ -257,7 +259,7 @@ export default function Page() {
             disabled={selectedWords.length === 0}
             onClick={() => setSelectedWords([])}
           >
-            Deselect all
+            Clear
           </CircularButton>
 
           <CircularButton
@@ -296,7 +298,7 @@ export default function Page() {
               }
             }}
           >
-            Submit
+            Enter
           </CircularButton>
         </div>
       ) : (
@@ -338,7 +340,8 @@ export default function Page() {
 
       <div>
         <p style={{ textAlign: "center" }}>
-          Credits: Original by Zachary Robinson. Improved and extended by Kyle Song.
+          Credits: Original by Zachary Robinson. Improved and extended by Kyle Song. 
+          Inspired by NYTimes’ Connections ©
         </p>
       </div>
 
@@ -354,17 +357,17 @@ export default function Page() {
               ×
             </button>
 
-            <h2 className="mb-2 text-2xl font-bold">How to Play</h2>
+            <h2 className="mb-2 text-2xl font-bold">How to solve</h2>
             <p className="mb-4 text-stone-700">
               Sort the 16 tiles into four clusters of four tiles.
             </p>
 
             <ul className="mb-4 list-disc pl-5 text-stone-700">
               <li>
-                Select four tiles and tap <strong>Submit</strong> to check if your
+                Select four tiles and tap <strong>Enter</strong> to check if your
                 guess is correct.
               </li>
-              <li>Find the groups without making 4 mistakes!</li>
+              <li>Find the groups without making {MAX_MISTAKES} mistakes!</li>
             </ul>
 
             <h3 className="mb-2 text-lg font-semibold">Cluster Examples</h3>
