@@ -396,8 +396,8 @@ export default function Page() {
 
               <div className="flex justify-center gap-6">
                 {[
-                  { label: "Straightforward", colorClass: colors[0] },
-                  { label: "Moderate", colorClass: colors[1] },
+                  { label: "Straightforward", colorClass: colors[1] },
+                  { label: "Moderate", colorClass: colors[0] },
                   { label: "Challenging", colorClass: colors[2] },
                   { label: "Tricky", colorClass: colors[3] },
                 ].map((item) => (
