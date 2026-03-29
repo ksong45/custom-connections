@@ -2,8 +2,8 @@ import { GameOptions } from "./game-options";
 
 /** The tailwind strings for each of the color categories. */
 export const colors = [
-  "bg-nyt-yellow",
   "bg-nyt-green",
+  "bg-nyt-yellow",
   "bg-nyt-blue",
   "bg-nyt-purple",
 ] as const;
