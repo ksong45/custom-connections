@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense, type ReactNode } from "react";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next"
 
 /* eslint-disable @next/next/no-img-element */
 
