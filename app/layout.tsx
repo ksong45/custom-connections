@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense, type ReactNode } from "react";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -30,6 +30,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <hr className="border-stone-300" />
 
         <Suspense>{children}</Suspense>
+        <Analytics />
       </body>
     </html>
   );
