@@ -45,7 +45,7 @@ function buildShareText(
     "",
     ...lines,
     "",
-    `Mistakes: ${totalMistakes}/${MAX_MISTAKES}`,
+    `Mistakes: ${totalMistakes}`,
   ].join("\n");
 }
 
@@ -102,7 +102,7 @@ export default function Page() {
     if (!lostGame || !gameOptions) return;
 
     setPoolAnimated(true);
-    setFinalGuesses(guesses);
+    setFinalGuesses([...guesses]);
     setTimeout(() => {
       setGuesses([...gameOptions.words]);
       setWordPool([]);
@@ -318,7 +318,13 @@ export default function Page() {
           <CircularButton
             variant="filled"
             onClick={async () => {
-              const text = buildShareText(gameOptions, lostGame ? finalGuesses : guesses, totalMistakes);
+              const relevantGuesses = lostGame ? finalGuesses : guesses;
+
+              const text = buildShareText(
+                gameOptions,
+                relevantGuesses,
+                getTotalMistakes(gameOptions, relevantGuesses)
+              );
 
               // Try native share first (mobile, some desktops)
               if (navigator.share) {
