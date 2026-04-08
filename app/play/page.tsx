@@ -62,6 +62,7 @@ export default function Page() {
   const [wordPool, setWordPool] = useState<string[]>([]);
   const [guesses, setGuesses] = useState<string[][]>([]);
   const [showHelp, setShowHelp] = useState(false);
+  const [finalGuesses, setFinalGuesses] = useState<string[][]>([]);
 
   useEffect(() => {
     if (!params.has("options")) return;
@@ -101,6 +102,7 @@ export default function Page() {
     if (!lostGame || !gameOptions) return;
 
     setPoolAnimated(true);
+    setFinalGuesses(guesses);
     setTimeout(() => {
       setGuesses([...gameOptions.words]);
       setWordPool([]);
@@ -316,7 +318,7 @@ export default function Page() {
           <CircularButton
             variant="filled"
             onClick={async () => {
-              const text = buildShareText(gameOptions, guesses, totalMistakes);
+              const text = buildShareText(gameOptions, lostGame ? finalGuesses : guesses, totalMistakes);
 
               // Try native share first (mobile, some desktops)
               if (navigator.share) {
