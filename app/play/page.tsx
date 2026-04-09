@@ -326,19 +326,51 @@ export default function Page() {
                 getTotalMistakes(gameOptions, relevantGuesses)
               );
 
-              // Try native share first (mobile, some desktops)
-              if (navigator.share) {
+              function fallbackCopy(text: string) {
+                const textarea = document.createElement("textarea");
+                textarea.value = text;
+
+                textarea.style.position = "fixed";
+                textarea.style.opacity = "0";
+
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+
+                let success = false;
                 try {
-                  await navigator.share({ text });
-                  return;
-                } catch {
-                  // fall through to clipboard
+                  success = document.execCommand("copy");
+                } catch (err) {
+                  console.error("Copy failed", err);
                 }
+
+                document.body.removeChild(textarea);
+                return success;
               }
 
-              // Fallback: copy to clipboard
-              await navigator.clipboard.writeText(text);
-              toast("Results copied to clipboard!");
+              let isIframe = true;
+              try {
+                isIframe = window.self !== window.top;
+              } catch {
+                isIframe = true;
+              }
+
+              try {
+                if (!isIframe && navigator.share) {
+                  await navigator.share({ text });
+                  return;
+                }
+              } catch {}
+
+              // Try copy
+              const copied = fallbackCopy(text);
+
+              if (copied) {
+                toast("Results copied to clipboard!");
+              } else {
+                // 🔥 GUARANTEED fallback
+                alert("Copy this manually:\n\n" + text);
+              }
             }}
           >
             Share
