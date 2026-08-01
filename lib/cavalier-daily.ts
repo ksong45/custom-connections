@@ -53,3 +53,39 @@ export async function fetchPuzzleForDate(
   };
 }
 
+export function parseDateString(dateStr: string): Date {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+export async function fetchMostRecentPuzzle(
+  maxDaysBack = 14
+): Promise<DatedPuzzle | null> {
+  const today = new Date();
+  for (let i = 0; i < maxDaysBack; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const result = await fetchPuzzleForDate(d);
+    if (result) return result;
+  }
+  return null;
+}
+
+export async function listPuzzleDatesForMonth(
+  year: number,
+  month: number
+): Promise<Array<{ date: string; articleUrl: string }>> {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const dates = Array.from(
+    { length: daysInMonth },
+    (_, i) => new Date(year, month - 1, i + 1)
+  );
+
+  const results = await Promise.all(
+    dates.map((d) => fetchPuzzleForDate(d).catch(() => null))
+  );
+
+  return results
+    .filter((r): r is NonNullable<typeof r> => r !== null)
+    .map(({ date, articleUrl }) => ({ date, articleUrl }));
+}
