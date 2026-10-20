@@ -68,6 +68,20 @@ Since each request only checks one month at a time, there's no cap on how
 far back the archive can go; callers can just request earlier months as
 needed (e.g. as a user scrolls back on a calendar).
 
+### `GET /data?options=<base64>`
+
+Takes the same `options` value as the iframe link in the article and returns
+the decoded puzzle directly, with no article scraping. Just swap `/play` for
+`/data` in the iframe URL:
+
+- `https://custom-connections-2.vercel.app/play?options=XXXX` (iframe)
+- `https://custom-connections-2.vercel.app/data?options=XXXX` (JSON)
+
+**Response `200`:** `{ "names": [...], "words": [[...], ...], "author": "...", "title": "..." }`
+**Response `400`:** `{ "error": "..." }` if `options` is missing or invalid.
+
+---
+
 ### How it works
 
 Puzzles aren't stored in a database - each one is embedded as base64-encoded
